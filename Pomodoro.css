@@ -31,7 +31,7 @@ button:disabled {
   width: 240px;
   height: 240px;
   margin-bottom: 3rem;  
-  background-image: url("/img/clock.png");
+  background-image: url("clock.png");
 }
 .timer p {
   font-size: 48px;
