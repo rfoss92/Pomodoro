@@ -3,33 +3,33 @@
   let seconds = 60;
   let breakLength = $("#breakLength").html();
   let sessionLength = $("#sessionLength").html();
-  let flag = true;
-  let pauseStatus = true;
+  let isSession = true;
+  let isPaused = true;
   $("#pauseButton, #resetButton").prop('disabled', true);
 
   // settings
   sessionMinus.onclick = () => {    
     if (sessionLength > 1) {
-      document.getElementById("sessionLength").innerHTML--;
+      $("#sessionLength")[0].innerHTML--;
       sessionLength = $("#sessionLength").html();
       $("#minutes").html(sessionLength);
       minutes = sessionLength;
     }
   };
   sessionPlus.onclick = () => {  
-    document.getElementById("sessionLength").innerHTML++;  
+    $("#sessionLength")[0].innerHTML++;  
     sessionLength = $("#sessionLength").html();
     $("#minutes").html(sessionLength);
     minutes = sessionLength;
   };
   breakMinus.onclick = () => {  
     if (breakLength > 1) {
-      document.getElementById("breakLength").innerHTML--;   
+      $("#breakLength")[0].innerHTML--;   
       breakLength = $("#breakLength").html();
     }
   };
   breakPlus.onclick = () => {
-    document.getElementById("breakLength").innerHTML++;
+    $("#breakLength")[0].innerHTML++;
     breakLength = $("#breakLength").html();
   };
 
@@ -37,12 +37,12 @@
   startButton.onclick = () => {
     $("#pauseButton, #resetButton").prop('disabled', false);
     $("#sessionPlus, #sessionMinus, #breakPlus, #breakMinus, #startButton").prop('disabled', true);
-    pauseStatus = false;      
+    isPaused = false;      
   }; 
   pauseButton.onclick = () => {
     $("#pauseButton").prop('disabled', true);    
     $("#startButton").prop('disabled', false);
-    pauseStatus = true;
+    isPaused = true;
   };
   resetButton.onclick = () => {
     $("#pauseButton, #resetButton").prop('disabled', true);    
@@ -51,41 +51,47 @@
     $("#minutes").html(sessionLength);
     seconds = 60;
     minutes = sessionLength;
-    flag = true;
-    pauseStatus = true;
+    isSession = isPaused = true;
   };
 
-  // timer
-  setInterval( () => {  
-    if (!pauseStatus) {
-      $("#minutes").html(minutes - 1);
-      // change seconds      
-      seconds--;
-      if (seconds < 10) {
-        $("#seconds").html("0" + seconds);
-      } else {
-        $("#seconds").html(seconds);
-      } 
-      // change minutes
+  setInterval(() => {  
+    if (!isPaused) {
+      $("#minutes").html(minutes - 1);  
+      updateSeconds();
       if (seconds <= 0) {
-        minutes--;
-        $("#minutes").html(minutes);
-        seconds = 60;
-        // switch session and break
+        updateMinutes();
         if (minutes <= 0) {
-          $("#beep")[0].play();          
-          flag = !flag;       
-          if (!flag) {
-            minutes = breakLength;
-            $("#minutes").html(breakLength);
-          } else {
-            minutes = sessionLength;
-            $("#minutes").html(sessionLength);
-          }
+          switchSessionAndBreak();
         }
         setInterval();
       } 
     } 
   }, 1000); 
   
+  function updateSeconds(){
+    seconds--;
+    if (seconds < 10) {
+      $("#seconds").html("0" + seconds);
+    } else {
+      $("#seconds").html(seconds);
+    } 
+  }
+
+  function updateMinutes(){
+    minutes--;
+    $("#minutes").html(minutes);
+    seconds = 60;
+  }
+
+  function switchSessionAndBreak(){
+    $("#beep")[0].play();          
+    isSession = !isSession;       
+    if (!isSession) {
+      minutes = breakLength;
+      $("#minutes").html(breakLength);
+    } else {
+      minutes = sessionLength;
+      $("#minutes").html(sessionLength);
+    }
+  }  
 })();
